@@ -1,0 +1,8 @@
+## Interface: 50400
+## Title: oUF |cFFFF9933Chronos|r
+## Author: Chronos
+## Version: 0.0.1
+## Notes: Modified from ElenUI
+## RequiredDeps: oUF
+
+oUF_Chronos.lua
