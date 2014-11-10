@@ -10,11 +10,13 @@ local cPetTarget = true			-- Pet's Target Frame.
 local cFocus = true				-- Focus Frame.
 local cFocusTarget = true		-- Focus's Target Frame.
 
+local cBossFrame = true			-- Boss Frame.
+
 local cSmooth = true			-- Smooth effect.
 local cCBP	= true				-- Combo points.
 local cTotems = true			-- Totem bar.
 local cRune = true				-- Rune bar.
-local cClassIcn = true			-- Class Icon bar.
+local cClassIcn = false			-- Class Icon bar.
 
 local cTarCastbar = true		-- Target Castbar.
 local cPlayCastbar = true		-- Player Castbar.
@@ -338,7 +340,7 @@ local cPlayer = function(self)
 
 		--: CLASSICON :--
 		local _, class = UnitClass('player')
-		if class == "PRIEST" or class == "PALADIN" or class == "MONK" or class == "WARLOCK" and cClassIcn == true then
+		if (class == "PRIEST" or class == "PALADIN" or class == "MONK" or class == "WARLOCK") and cClassIcn == true then
 			self.ClassIcons = CreateFrame("Frame", nil, self)
 			self.ClassIcons:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", -3, 3)
 			self.ClassIcons:SetHeight(10)
@@ -621,20 +623,20 @@ local cTarget = function(self)
 		
 	--:: BUFFS ::--
 
-		self.Buffs = CreateFrame('Frame', nil, self)
-		self.Buffs.size = 4.5 * 4.5
-		self.Buffs.spacing = 1
-		self.Buffs:SetWidth(150)
-		self.Buffs:SetHeight(5)
-		self.Buffs.initialAnchor = 'BOTTOMLEFT'
-		self.Buffs['growth-x'] = 'RIGHT'
-		self.Buffs['growth-y'] = 'UP'
-		self.Buffs.showBuffType = true
-		self.Buffs.num = 14
-		self.Buffs.filter = false
-		self.Buffs:SetPoint('BOTTOMLEFT',self.Health,'TOPLEFT', 0, 10)
-		self.Buffs.PostCreateIcon = PostCreateIcon
-		
+	--	self.Buffs = CreateFrame('Frame', nil, self)
+	--	self.Buffs.size = 4.5 * 4.5
+	--	self.Buffs.spacing = 1
+	--	self.Buffs:SetWidth(150)
+	--	self.Buffs:SetHeight(5)
+	--	self.Buffs.initialAnchor = 'BOTTOMLEFT'
+	---	self.Buffs['growth-x'] = 'RIGHT'
+	--	self.Buffs['growth-y'] = 'UP'
+	--	self.Buffs.showBuffType = true
+	--	self.Buffs.num = 14
+	--	self.Buffs.filter = false
+	--	self.Buffs:SetPoint('BOTTOMLEFT',self.Health,'TOPLEFT', 0, 10)
+	--	self.Buffs.PostCreateIcon = PostCreateIcon
+	--	
 	--:: ICONS ::--
 
 		--: LEADER :--
@@ -1107,6 +1109,110 @@ local cFocusTarget = function(self)
 	end
 end
 
+
+local cBossFrame = function (self) 
+	if cBossFrame == true then
+		self:SetSize(150, 25)
+
+	--:: BACKGROUND ::--
+	
+		Back = CreateFrame('Frame', nil, self)
+		Back:SetPoint('TOPRIGHT', self)
+		Back:SetPoint('TOPLEFT', self)
+		Back:SetFrameStrata('BACKGROUND')
+		Back:SetBackdrop(backdrop)
+		Back:SetBackdropColor(0.05, 0.05, 0.05)
+		Back:SetHeight(28)
+		
+	--:: HEALTH ::--
+	
+		--: BAR :--	
+		self.Health = CreateFrame('StatusBar', nil, self)
+		self.Health:SetBackdrop(statusback)
+		self.Health:SetBackdropColor(0.18,0.18,0.18)
+		self.Health:SetFrameStrata('LOW')
+		self.Health:SetPoint('TOPRIGHT', self)
+		self.Health:SetPoint('TOPLEFT', self)
+		self.Health:SetStatusBarTexture(statusbar)
+		self.Health:SetStatusBarColor(0.28,0.28,0.28)
+		self.Health.frequentUpdates = FreqUpdate
+		self.Health.Smooth = cSmooth
+		self.Health:SetHeight(20)
+		self.Health.colorClass = false
+
+	--:: NAME ::--
+	
+		self.Info = self.Health:CreateFontString(nil, 'OVERLAY')
+		self.Info:SetShadowOffset(1, -1)
+		self.Info:SetAlpha(1)
+		self.Info:SetFont(font, 8, '')
+		self:Tag(self.Info,'[name]' )
+		self.Info:SetJustifyH('CENTER')
+		self.Info:SetPoint('CENTER',self.Health, 'CENTER')
+		
+	--:: POWER ::--
+	
+		--: BAR :--
+		self.Power = CreateFrame('StatusBar', nil, self)
+		self.Power:SetBackdrop(statusback)
+		self.Power:SetBackdropColor(0.165,0.165,0.165)
+		self.Power:SetFrameStrata('LOW')
+		self.Power:SetPoint('TOPRIGHT', self.Health, 'BOTTOMRIGHT', 0, -1)
+		self.Power:SetPoint('TOPLEFT', self.Health, 'BOTTOMLEFT', 0, -1)
+		self.Power:SetStatusBarTexture(statusbar)
+		self.Power:SetStatusBarColor(0.28,0.28,0.28)
+		self.Power.frequentUpdates = FreqUpdate
+		self.Power.Smooth = cSmooth
+		self.Power:SetHeight(8)
+		self.Power.colorClass = true
+		
+		--: TEXT :--
+		self.Power.Text = self.Health:CreateFontString(nil, 'OVERLAY') 
+		self.Power.Text:SetFont(font, 8, '')
+		self.Power.Text:SetShadowOffset(1, -1) 
+		self.Power.Text.frequentUpdates = FreqUpdate
+		self:Tag(self.Power.Text,'[raidcolor] [curpp]|r')
+		self.Power.Text:SetJustifyH('LEFT')
+		self.Power.Text:SetPoint('LEFT',self.Power,'LEFT')
+		
+	--:: CASTBAR ::--
+
+		--: BAR :--
+		self.Castbar = CreateFrame('StatusBar', nil, self)
+		self.Castbar:SetFrameStrata('MEDIUM')
+		self.Castbar:SetFrameLevel(11)
+		self.Castbar:SetHeight(8)
+		self.Castbar:SetPoint('TOPRIGHT', self.Health, 'BOTTOMRIGHT', 0, -1)
+		self.Castbar:SetPoint('TOPLEFT', self.Health, 'BOTTOMLEFT', 0, -1)
+		self.Castbar:SetStatusBarTexture(statusbar)
+		self.Castbar:SetStatusBarColor(0.28,0.28,0.28)
+
+	--: TEXT :--
+		self.Castbar.Text = self.Castbar:CreateFontString(nil, 'OVERLAY')
+		self.Castbar.Text:SetFont(font, 8, '')
+		self.Castbar.Text:SetPoint('LEFT', self.Castbar,'LEFT', 2, 0)
+		self.Castbar.Text:SetWidth(200)
+		self.Castbar.Text:SetTextColor(1,1,1)
+		self.Castbar.Text:SetJustifyH('LEFT')
+
+	--: TIME :--
+		self.Castbar.Time = self.Castbar:CreateFontString(nil, 'OVERLAY') 
+		self.Castbar.Time:SetFont(font, 8, '')
+		self.Castbar.Time:SetPoint('RIGHT', self.Castbar,'RIGHT', -2, 0)
+		self.Castbar.Time:SetWidth(50)
+		self.Castbar.Time:SetTextColor(1,1,1)
+		self.Castbar.Time:SetJustifyH('RIGHT')
+		
+	--: BG :--
+		self.Castbar.Bg = self.Castbar:CreateTexture(nil, 'BACKGROUND')
+		self.Castbar.Bg:SetPoint('CENTER', self.Castbar)
+		self.Castbar.Bg:SetWidth(150)
+		self.Castbar.Bg:SetHeight(8)
+		self.Castbar.Bg:SetTexture(statusbar)
+		self.Castbar.Bg:SetVertexColor(0.05, 0.05, 0.05, 0.9)
+	end
+end
+
 -----------------------
 --/ SPECIFIC LAYOUT \--
 -----------------------
@@ -1144,6 +1250,18 @@ local UnitSpecific = {
 		Shared(self, ...)		
 		cFocusTarget(self)
 	end,
+	boss = function(self, ...)
+		Shared(self, ...)		
+		cBossFrame(self)
+	end,
+	--boss = function (self, ...)
+	--	for i = 1, MAX_BOSS_FRAMES do
+	--		boss[i] = function (self, ...)
+	--			Shared(self, ...)
+	--			cBossFrame(self)
+	--		end
+	--	end
+	--end,
 }
 ---------------------------------------
 -- register style(s) and spawn units --
@@ -1156,11 +1274,24 @@ end
 
 -- A small helper to change the style into a unit specific, if it exists.
 local spawnHelper = function(self, unit, ...)
-	if(UnitSpecific[unit]) then
+	if (UnitSpecific[unit]) then
 		self:SetActiveStyle('Chronos - ' .. unit:gsub("^%l", string.upper))
-		local object = self:Spawn(unit)
-		object:SetPoint(...)
-		return object
+		if (unit == 'boss') then
+			local boss = {}
+			for i = 1, MAX_BOSS_FRAMES do
+				boss[i] = self:Spawn("boss"..i, "oUF_Boss"..i)
+				if i == 1 then
+					boss[i]:SetPoint(...)
+				else
+					boss[i]:SetPoint("CENTER", boss[i-1], "CENTER", 0, 50)
+				end
+			end
+		else 
+			--self:SetActiveStyle('Chronos - ' .. unit:gsub("^%l", string.upper))
+			local object = self:Spawn(unit)
+			object:SetPoint(...)
+			return object
+		end
 	else
 		self:SetActiveStyle'Chronos'
 		local object = self:Spawn(unit)
@@ -1178,6 +1309,19 @@ oUF:Factory(function(self)
 	local pettarget = spawnHelper(self, 'pettarget', "CENTER", -450, -133)
 	local focus = spawnHelper(self, 'focus', "CENTER", -354, -120)
 	local focustarget = spawnHelper(self, 'focustarget', "CENTER", -354, -105)
+	local boss = spawnHelper(self, 'boss', "CENTER", 600, -163)
+	--local boss = {}
+	--	self:SetActiveStyle("Boss")
+	--	for i = 1, MAX_BOSS_FRAMES do
+	--		boss[i] = spawnHelper(self, 'boss', "CENTER", 250, -120)
+	--		boss[i] = self:Spawn("boss"..i, "oUF_Boss"..i)
+	--		if i == 1 then
+	--			boss[i]:SetPoint("CENTER", 650, -153)
+	--		else
+	--			boss[i]:SetPoint("CENTER", boss[i-1], "CENTER", 0, 50)
+	--		end
+	--	end
+	--end
 end)
 
 oUF:DisableBlizzard('party')
