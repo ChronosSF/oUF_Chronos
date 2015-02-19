@@ -18,8 +18,8 @@ local cTotems = true			-- Totem bar.
 local cRune = true				-- Rune bar.
 local cClassIcn = false			-- Class Icon bar.
 
-local cTarCastbar = true		-- Target Castbar.
-local cPlayCastbar = true		-- Player Castbar.
+local cTarCastbar = false		-- Target Castbar.
+local cPlayCastbar = false		-- Player Castbar.
 
 
 --------------
@@ -46,6 +46,10 @@ local statusback = {
 	bgFile = "Interface\\AddOns\\oUF_Chronos\\media\\statusbar.tga",
 	insets = {top = 0, left = 0, bottom = 0, right = 0},
 }
+
+--:: CLASS COLOR ::--
+local class, classFileName = UnitClass("player")
+local color = RAID_CLASS_COLORS[classFileName]
 
 --:: TAGS ::--
 
@@ -516,6 +520,42 @@ local cPlayer = function(self)
 			self.Castbar.Bg:SetHeight(17)
 			self.Castbar.Bg:SetTexture(statusbar)
 			self.Castbar.Bg:SetVertexColor(0.05, 0.05, 0.05, 0.9)
+		end
+		
+		-- EXPERIENCE
+		if (UnitLevel("player") < 100) then
+			self.Experience = CreateFrame('StatusBar', nil, self)
+			self.Experience:SetFrameStrata('MEDIUM')
+			self.Experience:SetFrameLevel(10)
+			self.Experience:SetWidth(250)
+			self.Experience:SetHeight(18)
+			self.Experience:SetPoint("TOP", UIParent, "TOP", 0, -15)
+			self.Experience:SetStatusBarTexture(statusbar)
+			self.Experience:SetStatusBarColor(color.r, color.g, color.b)
+			
+			self.Experience.Backdrop = CreateFrame("Frame", nil, self)
+			self.Experience.Backdrop:SetPoint('TOPLEFT', self.Experience, 'TOPLEFT', -1, 1)
+			self.Experience.Backdrop:SetSize(252, 20)
+			self.Experience.Backdrop:SetBackdrop(statusback)
+			self.Experience.Backdrop:SetBackdropColor(0.05, 0.05, 0.05)
+			
+			-- Position and size the Rested background-bar
+			self.Experience.Rested = CreateFrame('StatusBar', nil, Experience)
+			self.Experience.Rested:SetAllPoints(self.Experience)
+			self.Experience.Rested:SetStatusBarTexture(statusbar)
+			self.Experience.Rested:SetStatusBarColor(color.r, color.g, color.b, 0.2)
+			
+			-- Text display
+			self.Experience.Value = self.Experience:CreateFontString(nil, 'OVERLAY')
+			self.Experience.Value:SetFont(font, 9, 'THINOUTLINE')
+			self.Experience.Value:SetPoint('CENTER', self.Experience, 'CENTER', 0, 0)
+			self:Tag(self.Experience.Value, '[curxp] / [maxxp]')
+			
+			-- Add a background
+			self.Experience.Bg = self.Experience.Rested:CreateTexture(nil, 'BACKGROUND')
+			self.Experience.Bg:SetAllPoints(self.Experience)
+			self.Experience.Bg:SetTexture(statusbar)
+			self.Experience.Bg:SetVertexColor(0.28, 0.28, 0.28)
 		end
 end
 
@@ -1210,6 +1250,38 @@ local cBossFrame = function (self)
 		self.Castbar.Bg:SetHeight(8)
 		self.Castbar.Bg:SetTexture(statusbar)
 		self.Castbar.Bg:SetVertexColor(0.05, 0.05, 0.05, 0.9)
+		
+	--: BUFFS :--
+		self.Debuffs = CreateFrame('Frame', nil, self)
+		self.Debuffs.size = 4 * 4
+		self.Debuffs.spacing = 1
+		self.Debuffs:SetWidth(150)
+		self.Debuffs:SetHeight(5)
+		self.Debuffs.initialAnchor = 'BOTTOMRIGHT'
+		self.Debuffs['growth-x'] = 'LEFT'
+		self.Debuffs['growth-y'] = 'UP'
+		self.Debuffs.showBuffType = true
+		self.Debuffs.num = 3
+		self.Debuffs.filter = false
+		self.Debuffs.disableCooldown = true
+		self.Debuffs:SetPoint('BOTTOMLEFT',self.Health,'TOPRIGHT', 0, 3)
+		self.Debuffs.PostCreateIcon = PostCreateIcon
+		
+	--: DEBUFFS :--
+		self.Debuffs = CreateFrame('Frame', nil, self)
+		self.Debuffs.size = 4 * 4
+		self.Debuffs.spacing = 1
+		self.Debuffs:SetWidth(150)
+		self.Debuffs:SetHeight(5)
+		self.Debuffs.initialAnchor = 'BOTTOMLEFT'
+		self.Debuffs['growth-x'] = 'RIGHT'
+		self.Debuffs['growth-y'] = 'UP'
+		self.Debuffs.showBuffType = true
+		self.Debuffs.num = 3
+		self.Debuffs.filter = false
+		self.Debuffs.onlyShowPlayer = true
+		self.Debuffs:SetPoint('BOTTOMLEFT',self.Health,'TOPLEFT', 0, 3)
+		self.Debuffs.PostCreateIcon = PostCreateIcon
 	end
 end
 
@@ -1254,14 +1326,6 @@ local UnitSpecific = {
 		Shared(self, ...)		
 		cBossFrame(self)
 	end,
-	--boss = function (self, ...)
-	--	for i = 1, MAX_BOSS_FRAMES do
-	--		boss[i] = function (self, ...)
-	--			Shared(self, ...)
-	--			cBossFrame(self)
-	--		end
-	--	end
-	--end,
 }
 ---------------------------------------
 -- register style(s) and spawn units --
@@ -1287,7 +1351,6 @@ local spawnHelper = function(self, unit, ...)
 				end
 			end
 		else 
-			--self:SetActiveStyle('Chronos - ' .. unit:gsub("^%l", string.upper))
 			local object = self:Spawn(unit)
 			object:SetPoint(...)
 			return object
@@ -1310,18 +1373,6 @@ oUF:Factory(function(self)
 	local focus = spawnHelper(self, 'focus', "CENTER", -354, -120)
 	local focustarget = spawnHelper(self, 'focustarget', "CENTER", -354, -105)
 	local boss = spawnHelper(self, 'boss', "CENTER", 600, -163)
-	--local boss = {}
-	--	self:SetActiveStyle("Boss")
-	--	for i = 1, MAX_BOSS_FRAMES do
-	--		boss[i] = spawnHelper(self, 'boss', "CENTER", 250, -120)
-	--		boss[i] = self:Spawn("boss"..i, "oUF_Boss"..i)
-	--		if i == 1 then
-	--			boss[i]:SetPoint("CENTER", 650, -153)
-	--		else
-	--			boss[i]:SetPoint("CENTER", boss[i-1], "CENTER", 0, 50)
-	--		end
-	--	end
-	--end
 end)
 
 oUF:DisableBlizzard('party')

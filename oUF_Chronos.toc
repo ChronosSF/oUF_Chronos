@@ -4,5 +4,6 @@
 ## Version: 0.0.1
 ## Notes: Modified from ElenUI
 ## RequiredDeps: oUF
+## OptionalDeps: oUF_Experience
 
 oUF_Chronos.lua
