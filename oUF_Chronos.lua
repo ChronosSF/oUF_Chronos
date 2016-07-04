@@ -110,18 +110,18 @@ end;
 
 --:: THREAT ::--
 local function check_threat(self,event,unit)
-    if unit then
-      if self.unit ~= unit then
-        return
-      end
-      local Threat = UnitThreatSituation(unit)
-  		if Threat == 3 then
-  		  self.Threat:SetVertexColor(0.5, 0, 0, 1)
-  		else
-  		  self.Threat:SetVertexColor(0, 0, 0, 0)
-  		end
-	  end
-  end
+	if unit then
+		if self.unit ~= unit then
+			return
+		end
+	local Threat = UnitThreatSituation(unit)
+		if Threat == 3 then
+			self.Threat:SetVertexColor(0.5, 0, 0, 1)
+		else
+			self.Threat:SetVertexColor(0, 0, 0, 0)
+		end
+	end
+end
 
 --:: RAID ICONS ::-- (Taken from oUF_Nivea)
 
