@@ -1,6 +1,6 @@
-#Chronos - oUF Layout
+# Chronos - oUF Layout
 
-##Installation
+## Installation
 
 To install just get the package from GitHub and extract it to your `<wow-installation-directory>\Interface\AddOns\` folder.
 
@@ -8,7 +8,7 @@ To install just get the package from GitHub and extract it to your `<wow-install
 
 [oUF Experience](http://www.wowinterface.com/downloads/info10647-oUFExperience.html) is required for the experience bar to appear (it'll be hidden for max level characters)
 
-##Supported Frames
+## Supported Frames
 
 - Player
 - Target
@@ -21,15 +21,15 @@ To install just get the package from GitHub and extract it to your `<wow-install
 - Boss
 - Experience
 
-##Configuration
+## Configuration
 
 Currently no UI is available for customization - simple options are available in the header of the `oUF_Chronos.lua` file.
 
-##Credits
+## Credits
 
 Original work of [Elen'](http://www.wowinterface.com/forums/member.php?action=getinfo&userid=234975) from [WoWInterface](http://www.wowinterface.com/addons.php)
 
-##Contribution
+## Contribution
 
 Feel free to fork the repo and make improvements. Every pull request will be considered. 
 
