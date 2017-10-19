@@ -1,7 +1,7 @@
 ## Interface: 70300
 ## Title: oUF |cFFFF9933Chronos|r
 ## Author: Chronos
-## Version: 7.0.3
+## Version: 7.3.0
 ## Notes: Modified from ElenUI
 ## RequiredDeps: oUF
 ## OptionalDeps: oUF_Experience
